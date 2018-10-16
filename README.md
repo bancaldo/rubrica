@@ -42,6 +42,9 @@ edit contact data simply by right-clicking on it.
 
 ...
 
+## Todo
+Validators during new contact saving.
+
 ## License
 
 GPL
