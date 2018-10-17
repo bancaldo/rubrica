@@ -2,10 +2,10 @@
 # info.py
 """Info Frame for About choice"""
 
-import os
 import wx
 import wx.html
 from wx.lib.buttons import GenBitmapTextButton
+from settings import IMG_PATH, BTN_BG
 
 
 class InfoFrame(wx.Frame):
@@ -16,11 +16,11 @@ class InfoFrame(wx.Frame):
         self.panel = InfoPanel(parent=self)
 
         self.Bind(wx.EVT_BUTTON, self.on_quit, id=self.panel.btn_quit.GetId())
-        self.panel.btn_quit.Bind(wx.EVT_ENTER_WINDOW, self.on_btn_enter)
-        self.panel.btn_quit.Bind(wx.EVT_LEAVE_WINDOW, self.on_btn_leave)
+        self.panel.btn_quit.Bind(wx.EVT_ENTER_WINDOW, self.parent.on_btn_enter)
+        self.panel.btn_quit.Bind(wx.EVT_LEAVE_WINDOW, self.parent.on_btn_leave)
 
         self.SetSize(400, 400)
-        self.SetBackgroundColour('#FBFBEF')
+        self.SetBackgroundColour(BTN_BG)
         self.Centre()
 
     # noinspection PyUnusedLocal
@@ -28,26 +28,11 @@ class InfoFrame(wx.Frame):
         self.parent.Enable()
         self.Destroy()
 
-    @staticmethod
-    def on_btn_enter(event):
-        """Into Button enter-mouse event handler"""
-        obj = event.GetEventObject()
-        obj.SetBackgroundColour('#F79F81')
-        obj.Refresh()
-
-    @staticmethod
-    def on_btn_leave(event):
-        """From Button leave-mouse event handler"""
-        obj = event.GetEventObject()
-        obj.SetBackgroundColour('#F8ECE0')
-        obj.Refresh()
-
 
 class InfoPanel(wx.Panel):
     """Panel containing html text"""
     def __init__(self, parent):
         super().__init__(parent=parent)
-        img_path = os.getcwd() + "\\images\\"
         self.parent = parent
         text = """
         <html><body bgcolor="#F78181"><center>
@@ -65,8 +50,10 @@ class InfoPanel(wx.Panel):
         html = wx.html.HtmlWindow(self)
         html.SetPage(text)
         self.btn_quit = GenBitmapTextButton(
-            self, wx.ID_ANY, wx.Bitmap("%squit.png" % img_path),
-            ' quit', (350, 150))
+            self, wx.ID_ANY, wx.Bitmap("%sexit.png" % IMG_PATH),
+            'Exit'.rjust(20), (350, 150))
+        self.btn_quit.SetBezelWidth(1)
+        self.btn_quit.SetBackgroundColour(BTN_BG)
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(html, 1, wx.EXPAND | wx.ALL, 5)
         sizer.Add(self.btn_quit, 0, wx.ALIGN_CENTER | wx.EXPAND, 5)

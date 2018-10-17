@@ -14,8 +14,10 @@ If you use a virtualenv install requirements via pip:
 pip install -r requirements.txt
 ```
 
-Simply run the main.py file to create database and 
-start the app
+In the settings.py file it is possible to set the database file name,
+the images path and the widget background colors.
+
+Simply run the main.py file to create database and start the app
 
 ## How to use
 

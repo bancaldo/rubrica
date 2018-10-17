@@ -8,10 +8,10 @@ selected contact. Right click on contact, enables the edit frame that modifies
 the contact values and stores the data to database.
 """
 
-import os
 import wx
 from wx.lib.buttons import GenBitmapTextButton
 from views.contact import ContactFrame
+from settings import IMG_PATH, FRAME_BG, BTN_BG
 
 
 class FindFrame(wx.Frame):
@@ -21,18 +21,15 @@ class FindFrame(wx.Frame):
         self.parent = parent
         super().__init__(parent=parent, title=title)
         self.panel = FindPanel(parent=self)
-        self.SetBackgroundColour('#FBFBEF')
+        self.SetBackgroundColour(FRAME_BG)
 
         for widget in self.panel.GetChildren():
+            if isinstance(widget, wx.Button) or \
+                    isinstance(widget, GenBitmapTextButton):
+                widget.Bind(wx.EVT_ENTER_WINDOW, self.parent.on_btn_enter)
+                widget.Bind(wx.EVT_LEAVE_WINDOW, self.parent.on_btn_leave)
             if isinstance(widget, wx.Button):
                 widget.Bind(wx.EVT_BUTTON, self.on_btn_chr)
-                widget.Bind(wx.EVT_ENTER_WINDOW, self.on_btn_enter)
-                widget.Bind(wx.EVT_LEAVE_WINDOW, self.on_btn_leave)
-
-        for widget in self.panel.GetChildren():
-            if isinstance(widget, GenBitmapTextButton):
-                widget.Bind(wx.EVT_ENTER_WINDOW, self.on_btn_enter)
-                widget.Bind(wx.EVT_LEAVE_WINDOW, self.on_btn_leave)
 
         self.Bind(wx.EVT_BUTTON, self.on_quit, self.panel.btn_quit)
         self.Bind(wx.EVT_BUTTON, self.on_delete, self.panel.btn_delete)
@@ -60,20 +57,6 @@ class FindFrame(wx.Frame):
         char = btn_chr.GetLabel()
         self.parent.controller.set_mem_char(char)
         self.fill_contacts(self.parent.controller.get_contacts_by_letter(char))
-
-    @staticmethod
-    def on_btn_enter(event):
-        """Into Button enter-mouse event handler"""
-        obj = event.GetEventObject()
-        obj.SetBackgroundColour('#F79F81')
-        obj.Refresh()
-
-    @staticmethod
-    def on_btn_leave(event):
-        """From Button leave-mouse event handler"""
-        obj = event.GetEventObject()
-        obj.SetBackgroundColour('#F8ECE0')
-        obj.Refresh()
 
     # noinspection PyUnusedLocal
     def on_delete(self, event):
@@ -146,13 +129,12 @@ class FindFrame(wx.Frame):
 class FindPanel(wx.Panel):
     def __init__(self, parent):
         super().__init__(parent=parent)
-        img_path = os.getcwd() + "\\images\\"
         self.parent = parent
         letters = [chr(i).upper() for i in range(ord('a'), ord('z')+1)]
         self.pos = 5
         for letter in letters:
             button = wx.Button(self, wx.ID_ANY, letter, (self.pos, 3), (26, 30))
-            button.SetBackgroundColour('#F8ECE0')
+            button.SetBackgroundColour(BTN_BG)
             self.pos += 26
 
         wx.StaticLine(self, wx.ID_ANY, (0, 35), (700, 3))
@@ -169,14 +151,15 @@ class FindPanel(wx.Panel):
         wx.StaticLine(self, wx.ID_ANY, (0, 270), (700, 3))
 
         self.btn_delete = GenBitmapTextButton(
-            self, wx.ID_ANY, wx.Bitmap("%strash.png" % img_path),
+            self, wx.ID_ANY, wx.Bitmap("%strash.png" % IMG_PATH),
             'Delete'.rjust(20), (10, 300), (340, -1))
-        self.btn_delete.SetBezelWidth(1)
-        self.btn_delete.SetBackgroundColour('#F8ECE0')
-        self.btn_delete.Disable()
-        
+
         self.btn_quit = GenBitmapTextButton(
-            self, wx.ID_ANY, wx.Bitmap("%scancel.png" % img_path),
-            'Cancel'.rjust(20), (345, 300), (340, -1))
-        self.btn_quit .SetBezelWidth(1)
-        self.btn_quit .SetBackgroundColour('#F8ECE0')
+            self, wx.ID_ANY, wx.Bitmap("%sexit.png" % IMG_PATH),
+            'Exit'.rjust(20), (345, 300), (340, -1))
+
+        for button in (self.btn_delete, self.btn_quit):
+            button.SetBezelWidth(1)
+            button.SetBackgroundColour(BTN_BG)
+
+        self.btn_delete.Disable()

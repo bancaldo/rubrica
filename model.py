@@ -6,12 +6,13 @@
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
+from settings import DATABASE
 
 
 class Model:
     """Model class with common application data"""
     base = declarative_base()
-    engine = create_engine('sqlite:///contacts.db', echo=True)
+    engine = create_engine(DATABASE, echo=True)
     metadata = base.metadata
     metadata.create_all(engine)
     m_session = sessionmaker(bind=engine)

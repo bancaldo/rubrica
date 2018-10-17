@@ -3,13 +3,13 @@
 """Core Frame for Rubrica App"""
 
 import wx
-import os
 from wx.lib.buttons import GenBitmapTextButton
 
 from views.contact import ContactFrame
 from views.info import InfoFrame
 from views.delete import DeleteFrame
 from views.find import FindFrame
+from settings import IMG_PATH, FRAME_BG, BTN_ACTIVE_BG, BTN_BG
 
 
 class CoreFrame(wx.Frame):
@@ -19,7 +19,7 @@ class CoreFrame(wx.Frame):
         super().__init__(parent=parent, title=title)
         self.controller = controller
         self.panel = CorePanel(parent=self)
-        self.SetBackgroundColour('#FBFBEF')
+        self.SetBackgroundColour(FRAME_BG)
         # GENERIC BINDINGS
         for widget in self.panel.GetChildren():
             if isinstance(widget, GenBitmapTextButton):
@@ -45,14 +45,14 @@ class CoreFrame(wx.Frame):
     def on_btn_enter(event):
         """Into Button enter-mouse event handler"""
         obj = event.GetEventObject()
-        obj.SetBackgroundColour('#F79F81')
+        obj.SetBackgroundColour(BTN_ACTIVE_BG)
         obj.Refresh()
 
     @staticmethod
     def on_btn_leave(event):
         """From Button leave-mouse event handler"""
         obj = event.GetEventObject()
-        obj.SetBackgroundColour('#F8ECE0')
+        obj.SetBackgroundColour(BTN_BG)
         obj.Refresh()
 
     # noinspection PyUnusedLocal
@@ -87,32 +87,31 @@ class CoreFrame(wx.Frame):
 class CorePanel(wx.Panel):
     def __init__(self, parent):
         super(CorePanel, self).__init__(parent=parent)
-        img_path = os.getcwd() + "\\images\\"
         self.parent = parent
         self.btn_info = GenBitmapTextButton(
-            self, wx.ID_ANY, wx.Bitmap("%sinfo.png" % img_path),
-            'About...'.rjust(15), size=(280, 45))
+            self, -1, wx.Bitmap("%sinfo.png" % IMG_PATH), size=(280, 45))
+        self.btn_info.SetToolTip("About...")
 
         self.btn_add = GenBitmapTextButton(
-            self, wx.ID_ANY, wx.Bitmap("%sadd.png" % img_path),
-            'Add Contact'.rjust(15), size=(280, 45))
-        
+            self, -1, wx.Bitmap("%sadd.png" % IMG_PATH), size=(280, 45))
+        self.btn_add.SetToolTip("Add new Contact to database")
+
         self.btn_delete = GenBitmapTextButton(
-            self, wx.ID_ANY, wx.Bitmap("%sdelete.png" % img_path),
-            'Delete Contact'.rjust(15), size=(280, 45))
+            self, -1, wx.Bitmap("%sdelete.png" % IMG_PATH), size=(280, 45))
+        self.btn_delete.SetToolTip("Delete an Existing Contact")
 
         self.btn_find = GenBitmapTextButton(
-            self, wx.ID_ANY, wx.Bitmap("%ssearch.png" % img_path),
-            'Find Contact'.rjust(15), size=(280, 45))
+            self, -1, wx.Bitmap("%ssearch.png" % IMG_PATH), size=(280, 45))
+        self.btn_find.SetToolTip("Find Contacts by Surname")
 
         self.btn_exit = GenBitmapTextButton(
-            self, wx.ID_ANY, wx.Bitmap("%sexit.png" % img_path),
-            'Exit'.rjust(15), size=(280, 45))
-        
+            self, -1, wx.Bitmap("%sexit.png" % IMG_PATH), size=(280, 45))
+        self.btn_exit.SetToolTip("Exit...")
+
         for widget in self.GetChildren():
             if isinstance(widget, GenBitmapTextButton):
                 widget.SetBezelWidth(1)
-                widget.SetBackgroundColour('#F8ECE0')
+                widget.SetBackgroundColour(BTN_BG)
 
         # BUTTONS SIZER
         sizer = wx.FlexGridSizer(rows=5, cols=1, hgap=5, vgap=0)

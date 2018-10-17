@@ -5,9 +5,9 @@ This frame is used as Add Contact
 Frame, and Edit Contact Frame
 """
 
-import os
 import wx
 from wx.lib.buttons import GenBitmapTextButton
+from settings import IMG_PATH, FRAME_BG, BTN_BG
 
 
 class ContactFrame(wx.Frame):
@@ -18,12 +18,15 @@ class ContactFrame(wx.Frame):
         super().__init__(parent=parent, title=title)
         self.panel = ContactPanel(parent=self)
 
-        self.SetBackgroundColour('#FBFBEF')
-
+        self.SetBackgroundColour(FRAME_BG)
+        on_enter_callback = self.parent.parent.on_btn_enter if self.edit \
+            else self.parent.on_btn_enter
+        on_leave_callback = self.parent.parent.on_btn_leave if self.edit \
+            else self.parent.on_btn_leave
         for widget in self.panel.GetChildren():
             if isinstance(widget, GenBitmapTextButton):
-                widget.Bind(wx.EVT_ENTER_WINDOW, self.on_btn_enter)
-                widget.Bind(wx.EVT_LEAVE_WINDOW, self.on_btn_leave)
+                widget.Bind(wx.EVT_ENTER_WINDOW, on_enter_callback)
+                widget.Bind(wx.EVT_LEAVE_WINDOW, on_leave_callback)
 
         self.Bind(wx.EVT_BUTTON, self.on_quit, id=self.panel.btn_quit.GetId())
         self.Bind(wx.EVT_BUTTON, self.on_save, self.panel.btn_save)
@@ -31,20 +34,6 @@ class ContactFrame(wx.Frame):
 
         self.SetSize(400, 300)
         self.Centre()
-
-    @staticmethod
-    def on_btn_enter(event):
-        """Into Button enter-mouse event handler"""
-        obj = event.GetEventObject()
-        obj.SetBackgroundColour('#F79F81')
-        obj.Refresh()
-
-    @staticmethod
-    def on_btn_leave(event):
-        """From Button leave-mouse event handler"""
-        obj = event.GetEventObject()
-        obj.SetBackgroundColour('#F8ECE0')
-        obj.Refresh()
 
     # noinspection PyUnusedLocal
     def on_quit(self, event):
@@ -103,7 +92,6 @@ class ContactFrame(wx.Frame):
 class ContactPanel(wx.Panel):
     def __init__(self, parent):
         super().__init__(parent=parent)
-        img_path = os.getcwd() + "\\images\\"
         self.parent = parent
 
         self.surname = wx.TextCtrl(self, style=wx.ALIGN_LEFT)
@@ -114,18 +102,19 @@ class ContactPanel(wx.Panel):
         self.mobile = wx.TextCtrl(self, style=wx.ALIGN_LEFT)
         
         self.btn_save = GenBitmapTextButton(
-            self, wx.ID_ANY, wx.Bitmap("%ssave.png" % img_path),
+            self, wx.ID_ANY, wx.Bitmap("%ssave.png" % IMG_PATH),
             'Save'.rjust(20), size=(200, 45))
-        self.btn_save.SetBezelWidth(1)
-        self.btn_save.SetBackgroundColour('#F8ECE0')
-        self.btn_save.Disable()
-        
-        self.btn_quit = GenBitmapTextButton(
-            self, wx.ID_ANY, wx.Bitmap("%scancel.png" % img_path),
-            'Cancel'.rjust(20), size=(200, 45))
-        self.btn_quit.SetBezelWidth(1)
-        self.btn_quit.SetBackgroundColour('#F8ECE0')
 
+        self.btn_quit = GenBitmapTextButton(
+            self, wx.ID_ANY, wx.Bitmap("%sexit.png" % IMG_PATH),
+            'Exit'.rjust(20), size=(200, 45))
+
+        for button in (self.btn_save, self.btn_quit):
+            button.SetBezelWidth(1)
+            button.SetBackgroundColour(BTN_BG)
+
+        self.btn_save.Disable()
+        # sizer
         sizer = wx.FlexGridSizer(rows=7, cols=2, hgap=5, vgap=1)
         sizer.Add(wx.StaticText(self, -1, 'Surname*', style=wx.ALIGN_LEFT))
         sizer.Add(self.surname, 0, wx.EXPAND | wx.ALL, 4)

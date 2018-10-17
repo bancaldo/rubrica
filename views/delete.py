@@ -2,9 +2,9 @@
 # delete.py
 """Delete Contact Frame for Rubrica App"""
 
-import os
 import wx
 from wx.lib.buttons import GenBitmapTextButton
+from settings import IMG_PATH, FRAME_BG, BTN_BG
 
 
 class DeleteFrame(wx.Frame):
@@ -14,19 +14,20 @@ class DeleteFrame(wx.Frame):
         self.parent = parent
         self.panel = DeletePanel(parent=self)
 
-        self.SetBackgroundColour('#FBFBEF')
+        self.SetBackgroundColour(FRAME_BG)
         self.SetSize(325, 180)
         self.Centre()
 
-        self.fill_contacts(self.parent.controller.get_contacts())
+        for widget in self.panel.GetChildren():
+            if isinstance(widget, wx.Button):
+                widget.Bind(wx.EVT_ENTER_WINDOW, self.parent.on_btn_enter)
+                widget.Bind(wx.EVT_LEAVE_WINDOW, self.parent.on_btn_leave)
 
-        self.panel.btn_delete.Bind(wx.EVT_ENTER_WINDOW, self.on_btn_enter)
-        self.panel.btn_delete.Bind(wx.EVT_LEAVE_WINDOW, self.on_btn_leave)
-        self.panel.btn_quit.Bind(wx.EVT_ENTER_WINDOW, self.on_btn_enter)
-        self.panel.btn_quit.Bind(wx.EVT_LEAVE_WINDOW, self.on_btn_leave)
         self.Bind(wx.EVT_BUTTON, self.on_quit, self.panel.btn_quit)
         self.Bind(wx.EVT_BUTTON, self.on_delete, self.panel.btn_delete)
         self.Bind(wx.EVT_COMBOBOX, self.on_contacts, self.panel.contacts)
+
+        self.fill_contacts(self.parent.controller.get_contacts())
 
     # noinspection PyUnusedLocal
     def on_quit(self, event):
@@ -40,20 +41,6 @@ class DeleteFrame(wx.Frame):
         self.panel.surname.SetLabel(surname)
         self.panel.name.SetLabel(name)
         self.panel.btn_delete.Enable()
-
-    @staticmethod
-    def on_btn_enter(event):
-        """Into Button enter-mouse event handler"""
-        obj = event.GetEventObject()
-        obj.SetBackgroundColour('#F79F81')
-        obj.Refresh()
-
-    @staticmethod
-    def on_btn_leave(event):
-        """From Button leave-mouse event handler"""
-        obj = event.GetEventObject()
-        obj.SetBackgroundColour('#F8ECE0')
-        obj.Refresh()
 
     def fill_contacts(self, iterable):
         self.panel.contacts.Clear()
@@ -83,25 +70,25 @@ class DeleteFrame(wx.Frame):
 class DeletePanel(wx.Panel):
     def __init__(self, parent):
         super().__init__(parent=parent)
-        img_path = os.getcwd() + "\\images\\"
         self.parent = parent
         self.contacts = wx.ComboBox(self, -1, "", 
                                     choices=[], style=wx.CB_DROPDOWN)
         self.surname = wx.StaticText(self)
         self.name = wx.StaticText(self)
         self.btn_delete = GenBitmapTextButton(
-            self, wx.ID_ANY, wx.Bitmap("%strash.png" % img_path),
+            self, wx.ID_ANY, wx.Bitmap("%strash.png" % IMG_PATH),
             'Delete'.rjust(20), size=(150, -1))
-        self.btn_delete.SetBezelWidth(1)
-        self.btn_delete.SetBackgroundColour('#F8ECE0')
-        self.btn_delete.Disable()
-        
+
         self.btn_quit = GenBitmapTextButton(
-            self, wx.ID_ANY, wx.Bitmap("%scancel.png" % img_path),
-            'Cancel'.rjust(20), size=(150, -1))
-        self.btn_quit.SetBezelWidth(1)
-        self.btn_quit.SetBackgroundColour('#F8ECE0')
-        
+            self, wx.ID_ANY, wx.Bitmap("%sexit.png" % IMG_PATH),
+            'Exit'.rjust(20), size=(150, -1))
+
+        for button in (self.btn_delete, self.btn_quit):
+            button.SetBezelWidth(1)
+            button.SetBackgroundColour(BTN_BG)
+
+        self.btn_delete.Disable()
+        # Sizer
         sizer = wx.FlexGridSizer(rows=3, cols=2, hgap=5, vgap=1)
         sizer.Add(wx.StaticText(self, -1, 'Surname', style=wx.ALIGN_LEFT))
         sizer.Add(self.surname, 0, wx.EXPAND | wx.ALL, 4)
