@@ -1,7 +1,8 @@
 # Rubrica 3.0
 
-Rubrica 3.0 is a simple App to create a contacts agenda.
-This is simply an exercise to use database and graphic library
+Rubrica 3.0 is a simple App written in python 3, which creates a contacts agenda.
+This is simply an exercise to use database and graphic library.
+
 python modules used:
 - wxPython for Graphics
 - sqlalchemy for database and ORM
